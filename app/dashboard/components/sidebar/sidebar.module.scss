@@ -1,0 +1,10 @@
+.container {
+  @apply w-[320px] border-r-2 min-h-screen max-h-screen sticky top-0
+}
+
+.content {
+  @apply p-4
+}
+.logo {
+  @apply border-b-2 p-4
+}

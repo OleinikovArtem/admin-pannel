@@ -1,0 +1,8 @@
+.container {
+  @apply p-4 flex items-center gap-2.5 my-2 rounded;
+}
+
+.container:hover,
+.active {
+  @apply bg-stone-700
+}

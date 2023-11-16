@@ -1,4 +1,4 @@
-import { ModeToggle } from '@/components/ui/theme/theme-toggle'
+import { ModeToggle } from '@/components/ui/theme-toggle'
 
 export default function Home() {
   return (
