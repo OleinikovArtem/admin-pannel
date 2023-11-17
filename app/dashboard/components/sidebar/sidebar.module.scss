@@ -1,5 +1,5 @@
 .container {
-  @apply w-[320px] border-r-2 min-h-screen max-h-screen sticky top-0
+  @apply min-w-[320px] max-w-[320px] border-r-2 min-h-screen max-h-screen sticky top-0
 }
 
 .content {
