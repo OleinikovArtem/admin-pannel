@@ -1,6 +1,7 @@
 'use client'
 
 import { ApolloLink, HttpLink } from '@apollo/client'
+import { setContext } from '@apollo/client/link/context'
 import {
   ApolloNextAppProvider,
   NextSSRInMemoryCache,
@@ -8,41 +9,47 @@ import {
   SSRMultipartLink,
 } from '@apollo/experimental-nextjs-app-support/ssr'
 
+import { API_URL_GRAPHQL } from '@/constants/urls'
+import { getRefreshedAccessToken } from '@/lib/authService'
+
+const authLink = setContext(async (_, { headers, ...rest }) => {
+  try {
+    const token = await getRefreshedAccessToken()
+
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : '',
+      },
+    }
+  } catch (e) {
+    console.log(e)
+  }
+})
+
 function makeClient() {
   const httpLink = new HttpLink({
-    // this needs to be an absolute url, as relative urls cannot be used in SSR
-    uri: 'http://localhost:8080/graphql',
-    // you can disable result caching here if you want to
-    // (this does not work if you are rendering your page with `export const dynamic = "force-static"`)
+    uri: API_URL_GRAPHQL,
     fetchOptions: { cache: 'no-store' },
-    // you can override the default `fetchOptions` on a per query basis
-    // via the `context` property on the options passed as a second argument
-    // to an Apollo Client data fetching hook, e.g.:
-    // const { data } = useSuspenseQuery(MY_QUERY, { context: { fetchOptions: { cache: "force-cache" }}});
   })
+
+  const links = authLink.concat(httpLink)
 
   return new NextSSRApolloClient({
     cache: new NextSSRInMemoryCache(),
     link:
       typeof window === 'undefined'
         ? ApolloLink.from([
-            // in a SSR environment, if you use multipart features like
-            // @defer, you need to decide how to handle these.
-            // This strips all interfaces with a `@defer` directive from your queries.
             new SSRMultipartLink({
               stripDefer: true,
             }),
-            httpLink,
+            links,
           ])
-        : httpLink,
+        : links,
   })
 }
 
 // you need to create a component to wrap your app in
 export function ApolloProvider({ children }: React.PropsWithChildren) {
-  return (
-    <ApolloNextAppProvider makeClient={makeClient}>
-      {children}
-    </ApolloNextAppProvider>
-  )
+  return <ApolloNextAppProvider makeClient={makeClient}>{children}</ApolloNextAppProvider>
 }
