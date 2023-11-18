@@ -1,5 +1,11 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+
+import { useMutation } from '@apollo/client'
+import { LOGIN, LOGIN_TYPE, LOGIN_VARIABLES_TYPE } from '@/graphql/auth/login'
+import * as authService from '@/lib/authService'
+
 import * as z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -17,6 +23,9 @@ const formSchema = z.object({
 type Schema = z.infer<typeof formSchema>
 
 export function SignInForm() {
+  const router = useRouter()
+  const [login] = useMutation<LOGIN_TYPE, LOGIN_VARIABLES_TYPE>(LOGIN)
+
   const {
     register,
     handleSubmit,
@@ -25,8 +34,21 @@ export function SignInForm() {
     resolver: zodResolver(formSchema),
   })
 
-  const onSubmit = (data: Schema) => {
-    console.log(data)
+  const onSubmit = async (values: Schema) => {
+    try {
+      const { data, errors } = await login({
+        variables: values,
+        onError: (error) => {
+          alert(error.message)
+        },
+      })
+      if (data?.login) {
+        authService.login(data?.login)
+        router.push('/dashboard')
+      }
+    } catch (error) {
+      console.error('Unexpected error', errors)
+    }
   }
 
   return (

@@ -1,5 +1,11 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+
+import { useMutation } from '@apollo/client'
+import { REGISTRATION, REGISTRATION_TYPE, REGISTRATION_VARIABLES_TYPE } from '@/graphql/auth/registration'
+import * as authService from '@/lib/authService'
+
 import * as z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -24,6 +30,9 @@ const formSchema = z
 type Schema = z.infer<typeof formSchema>
 
 export function SignUpForm() {
+  const router = useRouter()
+  const [registration] = useMutation<REGISTRATION_TYPE, REGISTRATION_VARIABLES_TYPE>(REGISTRATION)
+
   const {
     register,
     handleSubmit,
@@ -32,9 +41,23 @@ export function SignUpForm() {
     resolver: zodResolver(formSchema),
   })
 
-  const onSubmit = (data: Schema) => {
-    console.log(data)
+  const onSubmit = async (values: Schema) => {
+    try {
+      const { data, errors } = await registration({
+        variables: values,
+        onError: (error) => {
+          alert(error.message)
+        },
+      })
+      if (data?.registration) {
+        authService.login(data?.registration)
+        router.push('/dashboard')
+      }
+    } catch (errors) {
+      console.error('Unexpected error', errors)
+    }
   }
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -53,7 +76,7 @@ export function SignUpForm() {
             <FormInput
               label="Confirm Password"
               id="confirmPassword"
-              type="confirmPassword"
+              type="password"
               register={register}
               error={errors?.confirmPassword}
             />

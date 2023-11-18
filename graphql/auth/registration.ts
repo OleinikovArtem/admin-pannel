@@ -1,17 +1,17 @@
 import { gql } from '@apollo/client/core'
-import { TOKENS } from '../../../authService'
+import { TOKENS } from '@/types/auth'
 
-export type REGISTRATION_VARIABLES = {
+export type REGISTRATION_VARIABLES_TYPE = {
   email: string
   password: string
   name: string
 }
 
-export type REGISTRATION = {
+export type REGISTRATION_TYPE = {
   registration: TOKENS
 }
 
-export const registration = gql`
+export const REGISTRATION = gql`
   mutation registration($email: String!, $password: String!, $name: String!) {
     registration(email: $email, password: $password, name: $name) {
       access_token
