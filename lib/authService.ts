@@ -9,6 +9,11 @@ export const login = (tokens: TOKENS) => {
   setTokens(tokens)
 }
 
+export const isAuthCheck = async () => {
+  const token = await getRefreshedAccessToken()
+  return Boolean(token)
+}
+
 export const logOut = () => {
   deleteCookie('access_token')
   deleteCookie('refresh_token')
@@ -17,14 +22,15 @@ export const logOut = () => {
 export const getRefreshedAccessToken = async () => {
   const currentAccessToken = getCookie('access_token')
   const currentRefreshToken = getCookie('refresh_token')
-  if (!currentAccessToken || !currentRefreshToken) return
 
-  const decodedToken = jwtDecode<Token>(currentAccessToken)
-  const isExpired = checkIsExpiredAccessToken(decodedToken.exp)
+  const decodedToken = currentAccessToken ? jwtDecode<Token>(currentAccessToken) : null
+  const isExpired = decodedToken ? checkIsExpiredAccessToken(decodedToken.exp) : true
 
   if (!isExpired) {
     return currentAccessToken
   }
+
+  if (!currentRefreshToken) return
 
   const result = await fetchTokensByRefreshToken(currentRefreshToken)
 
@@ -50,15 +56,7 @@ async function fetchTokensByRefreshToken(refreshToken: string) {
     const options = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: `{"query":"mutation refreshToken($refreshToken: String!) {
-      refreshToken(refreshToken: $refreshToken) {
-        access_token
-        refresh_token
-      }
-    }
-    ",
-    "operationName":"refreshToken",
-    "variables":{"refreshToken":"${refreshToken}"}}`,
+      body: `{"query":"mutation refreshToken($refreshToken: String!) {refreshToken(refreshToken: $refreshToken) {access_token refresh_token}}","operationName":"refreshToken","variables":{"refreshToken":"${refreshToken}"}}`,
     }
 
     const response = await fetch(API_URL_GRAPHQL, options)
