@@ -1,10 +1,5 @@
-import { ModeToggle } from '@/components/ui/theme-toggle'
+import { redirect } from 'next/navigation'
 
 export default function Home() {
-  return (
-    <main>
-      <h1>Home page</h1>
-      <ModeToggle />
-    </main>
-  )
+  return redirect('/dashboard')
 }

@@ -13,7 +13,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     async function init() {
       const isAuth = await isAuthCheck()
-      router.push(isAuth ? '/dashboard' : '/auth')
+      if (!isAuth) {
+        router.push('/auth')
+      }
     }
 
     init()
