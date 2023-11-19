@@ -1,15 +1,19 @@
 import { gql } from '@apollo/client/core'
 
-import { Pagination } from '../../../../models/Pagination'
-import { Product } from '../../../../models/Product'
+import { Pagination } from '@/types/pagination'
+import { Product } from '@/types/product'
 
-export type GET_PRODUCTS = {
+export type GET_PRODUCTS_VARIABLES_TYPE = {
+  page?: Number
+  limit?: Number
+  categories?: String[]
+}
+
+export type GET_PRODUCTS_TYPE = {
   products: Pagination<Product>
 }
 
-export const defaultResultGetProducts = { currentPage: 0, totalPages: 0, totalCount: 0, items: [] }
-
-export const getProducts = gql`
+export const GET_PRODUCTS = gql`
   query getProducts($page: Int = 1, $limit: Int = 10, $categories: [String!]) {
     products(page: $page, limit: $limit, categories: $categories) {
       totalCount
