@@ -45,6 +45,10 @@ export const usePagination = ({ totalPages }: usePaginationProps) => {
       first = false
     })
 
+    if (newParams === '') {
+      newParams = `?page=${newPage}`
+    }
+
     setPagination((prev) => ({
       ...prev,
       currentPage: newPage,
