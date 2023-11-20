@@ -15,7 +15,6 @@ interface ProductsTableProps {
 export const ProductsTable = ({ products }: ProductsTableProps) => {
   return (
     <Table>
-      <TableCaption>A list of your recent invoices.</TableCaption>
       <TableHeader>
         <TableRow className="pr-4">
           <TableHead className="w-[100px]">Image</TableHead>
