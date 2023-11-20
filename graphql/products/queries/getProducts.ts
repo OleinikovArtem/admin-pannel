@@ -26,6 +26,7 @@ export const GET_PRODUCTS = gql`
         price
         description
         isPublish
+        count
         categories {
           name
           id
