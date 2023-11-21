@@ -1,11 +1,9 @@
 import { gql } from '@apollo/client/core'
 
-import { Pagination } from '@/types/pagination'
+import { Pagination, PaginationVariables } from '@/types/pagination'
 import { Product } from '@/types/product'
 
-export type GET_PRODUCTS_VARIABLES_TYPE = {
-  page?: Number
-  limit?: Number
+export type GET_PRODUCTS_VARIABLES_TYPE = PaginationVariables & {
   categories?: String[]
 }
 

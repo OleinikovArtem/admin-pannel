@@ -4,3 +4,8 @@ export interface Pagination<T> {
   currentPage?: number
   items: T[]
 }
+
+export interface PaginationVariables {
+  page?: Number
+  limit?: Number
+}
