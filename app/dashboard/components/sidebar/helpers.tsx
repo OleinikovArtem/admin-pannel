@@ -9,7 +9,6 @@ import {
   MdOutlineSettings,
   MdHelpCenter,
   MdShoppingCart,
-  MdLogout,
 } from 'react-icons/md'
 
 export interface MenuItem {
