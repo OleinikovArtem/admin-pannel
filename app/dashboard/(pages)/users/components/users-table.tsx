@@ -7,6 +7,7 @@ import { MdOutlineEdit } from 'react-icons/md'
 
 import { User } from '@/types/user'
 import { Pagination } from '@/types/pagination'
+import { RxAvatar } from 'react-icons/rx'
 
 interface UsersTableProps {
   users?: Pagination<User>
@@ -29,14 +30,18 @@ export const UsersTable = ({ users }: UsersTableProps) => {
         {users?.items.map((user) => (
           <TableRow className="pr-4" key={user.id}>
             <TableCell>
-              <Image
-                src={user.image || ''}
-                width="0"
-                height="0"
-                sizes="100px"
-                className="w-[84px] h-[84px]"
-                alt={user.name || ''}
-              />
+              {user.image ? (
+                <Image
+                  src={user.image}
+                  width="0"
+                  height="0"
+                  sizes="100px"
+                  className="w-[84px] h-[84px]"
+                  alt={user.name || ''}
+                />
+              ) : (
+                <RxAvatar className="h-16 w-16" />
+              )}
             </TableCell>
             <TableCell className="font-medium">{user.name}</TableCell>
             <TableCell>{user.email}</TableCell>
