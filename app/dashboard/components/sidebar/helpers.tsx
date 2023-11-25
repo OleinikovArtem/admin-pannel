@@ -6,8 +6,6 @@ import {
   MdWork,
   MdAnalytics,
   MdPeople,
-  MdOutlineSettings,
-  MdHelpCenter,
   MdShoppingCart,
 } from 'react-icons/md'
 
@@ -65,21 +63,6 @@ export const menuItems: { title: string; list: MenuItem[] }[] = [
         title: 'Teams',
         path: '/dashboard/teams',
         icon: <MdPeople />,
-      },
-    ],
-  },
-  {
-    title: 'User',
-    list: [
-      {
-        title: 'Settings',
-        path: '/dashboard/settings',
-        icon: <MdOutlineSettings />,
-      },
-      {
-        title: 'Help',
-        path: '/dashboard/help',
-        icon: <MdHelpCenter />,
       },
     ],
   },
