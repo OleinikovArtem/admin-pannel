@@ -8,8 +8,7 @@ import { GET_PROFILE, GET_PROFILE_TYPE } from '@/graphql/users/query/getProfile'
 export const CurrentUser = () => {
   const { data, loading, error } = useQuery<GET_PROFILE_TYPE>(GET_PROFILE)
 
-  if (loading) return <p>Loading...</p>
-  if (error) return <p>Error: {error.message}</p>
+  if (!data) return
 
   return (
     <div className="flex items-center">
@@ -27,7 +26,7 @@ export const CurrentUser = () => {
           <RxAvatar className="h-8 w-8" />
         )}
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col text-left">
         <span className="text-sm">{data?.profile?.name}</span>
         <span className="text-zinc-500 text-xs">{data?.profile?.role?.toLowerCase()}</span>
       </div>

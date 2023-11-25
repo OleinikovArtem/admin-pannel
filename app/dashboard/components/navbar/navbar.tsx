@@ -1,8 +1,8 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { Breadcrumb } from '@/app/dashboard/components/navbar/breadcrumb'
-import { CurrentUser } from '@/app/dashboard/components/navbar/current-user'
+import { Breadcrumb } from './breadcrumb'
+import { Dropdown } from './dropdown'
 
 export const Navbar = () => {
   const pathname = usePathname()
@@ -11,7 +11,7 @@ export const Navbar = () => {
   return (
     <div className="w-full p-4 border-b-2 flex justify-between">
       <Breadcrumb list={listOfPaths} />
-      <CurrentUser />
+      <Dropdown />
     </div>
   )
 }
