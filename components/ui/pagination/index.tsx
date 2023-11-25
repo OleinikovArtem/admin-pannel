@@ -1,4 +1,5 @@
 import styles from './pagination.module.scss'
+import { generateKey } from '@/lib/utils'
 
 interface PaginationProps {
   totalPages: number
@@ -20,7 +21,7 @@ export const PaginationPanel = ({ totalPages, currentPage, goToNextPage, goToPre
         {pages.map((page, index) => {
           const draw = Math.abs(index + 1 - currentPage) < 3 || index + 1 === totalPages || index + 1 === 1
           return draw ? (
-            <li key={index} onClick={() => goToPage(index + 1)}>
+            <li key={generateKey('page', index)} onClick={() => goToPage(index + 1)}>
               <span
                 className={`${index + 1 !== currentPage ? styles.item : ''} ${
                   index + 1 === currentPage ? styles.current : ''
@@ -30,7 +31,9 @@ export const PaginationPanel = ({ totalPages, currentPage, goToNextPage, goToPre
               </span>
             </li>
           ) : (
-            <span className={styles.empty}>...</span>
+            <span key={generateKey('ellipsis', index)} className={styles.empty}>
+              ...
+            </span>
           )
         })}
 
