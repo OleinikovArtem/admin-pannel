@@ -19,24 +19,31 @@ export const logOut = () => {
   deleteCookie('refresh_token')
 }
 
+let isCalled = false
 export const getRefreshedAccessToken = async () => {
-  const currentAccessToken = getCookie('access_token')
-  const currentRefreshToken = getCookie('refresh_token')
+  if (isCalled) return
+  isCalled = true
+  try {
+    const currentAccessToken = getCookie('access_token')
+    const currentRefreshToken = getCookie('refresh_token')
 
-  const decodedToken = currentAccessToken ? jwtDecode<Token>(currentAccessToken) : null
-  const isExpired = decodedToken ? checkIsExpiredAccessToken(decodedToken.exp) : true
+    const decodedToken = currentAccessToken ? jwtDecode<Token>(currentAccessToken) : null
+    const isExpired = decodedToken ? checkIsExpiredAccessToken(decodedToken.exp) : true
 
-  if (!isExpired) {
-    return currentAccessToken
+    if (!isExpired) {
+      return currentAccessToken
+    }
+
+    if (!currentRefreshToken) return
+
+    const result = await fetchTokensByRefreshToken(currentRefreshToken)
+
+    if (result?.data.refreshToken) setTokens(result?.data.refreshToken)
+    isCalled = false
+    return result?.data.refreshToken.access_token
+  } catch (error) {
+    console.error('[getRefreshedAccessToken]: SERVER ERROR')
   }
-
-  if (!currentRefreshToken) return
-
-  const result = await fetchTokensByRefreshToken(currentRefreshToken)
-
-  if (result?.data.refreshToken) setTokens(result?.data.refreshToken)
-
-  return result?.data.refreshToken.access_token
 }
 
 function checkIsExpiredAccessToken(exp: number): boolean {
@@ -52,18 +59,14 @@ function setTokens(tokens: TOKENS) {
 }
 
 async function fetchTokensByRefreshToken(refreshToken: string) {
-  try {
-    const options = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: `{"query":"mutation refreshToken($refreshToken: String!) {refreshToken(refreshToken: $refreshToken) {access_token refresh_token}}","operationName":"refreshToken","variables":{"refreshToken":"${refreshToken}"}}`,
-    }
-
-    const response = await fetch(API_URL_GRAPHQL, options)
-    const json: { data: { refreshToken: TOKENS } } = await response.json()
-
-    return json
-  } catch (error) {
-    console.error('fetchTokensByRefreshToken', error)
+  const options = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: `{"query":"mutation refreshToken($refreshToken: String!) {refreshToken(refreshToken: $refreshToken) {access_token refresh_token}}","operationName":"refreshToken","variables":{"refreshToken":"${refreshToken}"}}`,
   }
+
+  const response = await fetch(API_URL_GRAPHQL, options)
+  const json: { data: { refreshToken: TOKENS } } = await response.json()
+
+  return json
 }
